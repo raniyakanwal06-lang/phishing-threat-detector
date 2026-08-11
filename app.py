@@ -4,8 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyM62UmjGDAYjyMolvgD+MQ/",
-      "include_colab_link": true
+      "authorship_tag": "ABX9TyN3IPvwB8yraXK8D/HtyjVO"
     },
     "kernelspec": {
       "name": "python3",
@@ -16,16 +15,6 @@
     }
   },
   "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/raniyakanwal06-lang/phishing-threat-detector/blob/main/app.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
     {
       "cell_type": "code",
       "execution_count": 1,
@@ -307,6 +296,66 @@
           ]
         }
       ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%writefile app.py\n",
+        "import streamlit as st\n",
+        "import re\n",
+        "\n",
+        "st.set_page_config(page_title=\"AI Phishing Threat Detector\", page_icon=\"🛡️\")\n",
+        "\n",
+        "st.title(\"🛡️ AI-Powered Phishing Threat Detector\")\n",
+        "st.write(\"Analyze incoming web links and URLs for potential security threats in real time.\")\n",
+        "\n",
+        "url_input = st.text_input(\"Enter URL to analyze:\", placeholder=\"https://example.com\")\n",
+        "\n",
+        "if st.button(\"Evaluate Threat Score\"):\n",
+        "    if url_input:\n",
+        "        score = 0\n",
+        "        indicators = []\n",
+        "\n",
+        "        # Heuristic 1: IP Address Host\n",
+        "        if re.search(r\"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\", url_input):\n",
+        "            score += 40\n",
+        "            indicators.append(\"IP address host detected\")\n",
+        "\n",
+        "        # Heuristic 2: Suspicious Keyword Stacking\n",
+        "        keywords = [\"login\", \"verify\", \"account\", \"update\", \"security\", \"paypal\", \"bank\"]\n",
+        "        found = [kw for kw in keywords if kw in url_input.lower()]\n",
+        "        if len(found) >= 2:\n",
+        "            score += 30\n",
+        "            indicators.append(f\"Suspicious keyword stacking detected: {', '.join(found)}\")\n",
+        "\n",
+        "        # Heuristic 3: Non-HTTPS Unencrypted Protocol\n",
+        "        if url_input.startswith(\"http://\"):\n",
+        "            score += 20\n",
+        "            indicators.append(\"Unencrypted HTTP protocol in use\")\n",
+        "\n",
+        "        # Display Results\n",
+        "        st.subheader(\"Analysis Results\")\n",
+        "        st.write(f\"**Threat Risk Score:** {score}%\")\n",
+        "\n",
+        "        if score >= 60:\n",
+        "            st.error(\"🚨 HIGH THREAT RISK DETECTED\")\n",
+        "        elif score >= 30:\n",
+        "            st.warning(\"⚠️ MODERATE THREAT RISK\")\n",
+        "        else:\n",
+        "            st.success(\"✅ LOW THREAT RISK (SAFE)\")\n",
+        "\n",
+        "        if indicators:\n",
+        "            st.write(\"### Flagged Risk Indicators:\")\n",
+        "            for ind in indicators:\n",
+        "                st.write(f\"- 🔴 {ind}\")\n",
+        "    else:\n",
+        "        st.info(\"Please enter a valid URL to analyze.\")"
+      ],
+      "metadata": {
+        "id": "qW6yG4PCPfLt"
+      },
+      "execution_count": null,
+      "outputs": []
     }
   ]
 }
